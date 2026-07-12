@@ -60,8 +60,9 @@ export type {{ {name}Props }} from "./{name}";
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Create a stateless host-element React component. Use only when the "
-            "target repository has no conflicting generator or file convention."
+            "Create a stateless host-element React component in a matching named "
+            "file. Use only when the target repository has no conflicting "
+            "generator or file convention."
         )
     )
     parser.add_argument("name", help="PascalCase component name")

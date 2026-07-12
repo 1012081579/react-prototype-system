@@ -18,6 +18,20 @@ What product or interaction question must this prototype answer?
 start -> state -> action -> result
 ```
 
+## Figma Naming Map
+
+| Figma name or node | Code name | Kind | Preserved or inferred | Reason if inferred |
+| --- | --- | --- | --- | --- |
+| | | | | |
+
+## Design System Mapping
+
+| Figma variable, style, or mode | Tailwind token or CSS variable | Existing or new | Consumers |
+| --- | --- | --- | --- |
+| | | | |
+
+If the file has no design system, record `Tailwind default theme` and list only the evidence-backed extensions.
+
 ## Component Inventory
 
 | Layer | Component | Reuse or new | Key variants |

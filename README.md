@@ -57,6 +57,9 @@ and missing interaction states. Implement and verify the necessary fixes.
 
 - Inspect the design source and repository before coding.
 - Default new or unconstrained React implementations to TypeScript and Tailwind CSS.
+- Preserve meaningful Figma names and infer missing names from product context.
+- Map a Figma design system into Tailwind-compatible variables before implementation; use Tailwind defaults when no design system exists.
+- Keep each component in a matching named file, make it responsive, and compose pages from those components.
 - Build through `tokens -> primitives -> patterns -> layouts -> screens -> flows`.
 - Prefer stateless display components with explicit data and callbacks.
 - Keep mocks, side effects, navigation, and orchestration outside visual components.
@@ -151,6 +154,9 @@ https://github.com/1012081579/react-prototype-system/tree/main/react-prototype-s
 
 - 编码之前先检查设计来源和代码仓库。
 - 新项目或未指定实现方式的 React 实现默认使用 TypeScript 和 Tailwind CSS。
+- 尽可能保留有意义的 Figma 命名，并根据产品上下文推断缺失的名称。
+- 如果 Figma 中存在设计系统，先映射为 Tailwind 兼容变量；如果不存在，则使用 Tailwind 默认设计体系。
+- 每个组件放入同名文件并完成响应式实现，再使用这些组件组合页面。
 - 按照 `tokens -> primitives -> patterns -> layouts -> screens -> flows` 构建。
 - 优先使用通过明确数据和 callback 控制的无状态展示组件。
 - 将 mock、副作用、导航和流程编排放在视觉组件之外。
@@ -246,6 +252,9 @@ $react-prototype-system を使用して、このReactページのデザイン再
 
 - コーディング前にデザインソースとリポジトリを確認します。
 - 新規または実装方法が未指定のReact実装では、TypeScriptとTailwind CSSを標準使用します。
+- 意味のあるFigma名を可能な限り維持し、不足する名前はプロダクトの文脈から推定します。
+- Figmaにデザインシステムがある場合は先にTailwind互換変数へ変換し、ない場合はTailwindのデフォルト体系を使用します。
+- 各コンポーネントを同名ファイルに置いてレスポンシブ対応し、それらを組み合わせてページを構築します。
 - `tokens -> primitives -> patterns -> layouts -> screens -> flows` の順序で構築します。
 - 明示的なデータとcallbackで制御する、状態を持たない表示コンポーネントを優先します。
 - mock、副作用、ナビゲーション、フロー制御を表示コンポーネントの外側に置きます。

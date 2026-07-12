@@ -8,6 +8,7 @@ Use a layered dependency model without forcing a new folder taxonomy onto a cohe
 - [Existing Repository First](#existing-repository-first)
 - [Greenfield Baseline](#greenfield-baseline)
 - [Placement Decisions](#placement-decisions)
+- [Component Files and Responsive Page Composition](#component-files-and-responsive-page-composition)
 - [Screen Rule](#screen-rule)
 - [Extraction Rule](#extraction-rule)
 - [Boundary Rule](#boundary-rule)
@@ -77,6 +78,29 @@ Framework-owned conventions take precedence. For example, keep route files where
 | Scenario fixtures and fake responses | `mocks` | production secrets or live endpoints |
 
 Co-locate files within a feature when that is the repository's established pattern. Layer names describe responsibilities, not mandatory global directories.
+
+## Component Files and Responsive Page Composition
+
+Match every reusable component's primary export and file name:
+
+```text
+components/app/ProductCard/
+  ProductCard.tsx
+  index.ts
+```
+
+Use the normalized meaningful Figma name for `ProductCard`. If the repository uses flat component files, keep `ProductCard.tsx` in the established directory; the file and export must still match.
+
+Keep responsive behavior inside the component when its content and responsibility remain the same. Use Tailwind breakpoint utilities, container constraints, and state variants rather than creating page-level desktop and mobile copies.
+
+Let the page:
+
+- import named responsive components
+- place them in route-level layout regions
+- provide data, status, and callbacks
+- coordinate navigation and shared state
+
+Create separate responsive components only when the content contract or interaction model materially changes, not merely because the layout stacks at a breakpoint.
 
 ## Screen Rule
 
