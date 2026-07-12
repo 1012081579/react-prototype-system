@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scaffold a small stateless React component for a greenfield prototype."""
+"""Scaffold a small stateless TypeScript React component for a greenfield prototype."""
 
 from __future__ import annotations
 

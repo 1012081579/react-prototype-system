@@ -1,6 +1,6 @@
 ---
 name: react-prototype-system
-description: Turn Figma frames, screenshots, visual specifications, or existing UI designs into high-fidelity, runnable React prototypes through a component-driven design-engineering workflow. Use when Codex is asked to reconstruct React components, screens, flows, design-system explorations, product concepts, or front-end mock applications from a design source; evolve a React prototype without collapsing its architecture; or review a design-to-code implementation for fidelity, component boundaries, interaction states, responsiveness, accessibility, and composition.
+description: Turn Figma frames, screenshots, visual specifications, or existing UI designs into high-fidelity, runnable React prototypes through a component-driven design-engineering workflow, defaulting new or unconstrained implementations to TypeScript and Tailwind CSS. Use when Codex is asked to reconstruct React components, screens, flows, design-system explorations, product concepts, or front-end mock applications from a design source; evolve a React prototype without collapsing its architecture; or review a design-to-code implementation for fidelity, component boundaries, interaction states, responsiveness, accessibility, and composition.
 ---
 
 # React Prototype System
@@ -13,20 +13,21 @@ Apply these rules throughout the task:
 
 1. Inspect the design source and repository before writing code.
 2. Preserve the repository's framework, conventions, tokens, components, and tooling unless the task requires a greenfield setup.
-3. Work from experience and flow to components and implementation:
+3. Default new or otherwise unconstrained React implementations to TypeScript and Tailwind CSS. In an existing repository, use them when present; do not migrate a coherent local stack unless the user requests it.
+4. Work from experience and flow to components and implementation:
 
    `experience -> interaction flow -> states -> component contracts -> tokens -> implementation`
 
-4. Build dependencies from lower layers to higher layers:
+5. Build dependencies from lower layers to higher layers:
 
    `tokens -> primitives -> patterns -> layouts -> screens -> flows`
 
-5. Prefer stateless display components controlled by explicit props and callbacks.
-6. Keep mock data, side effects, navigation, and orchestration outside reusable display components.
-7. Implement the primary path and at least one relevant failure or recovery path.
-8. Use real design assets when provided. Do not replace inspectable product imagery or icons with vague placeholders.
-9. Verify behavior and visual fidelity in a running browser at representative desktop and mobile sizes.
-10. Stop adding architecture when it no longer improves learning, fidelity, reuse, or changeability.
+6. Prefer stateless display components controlled by explicit props and callbacks.
+7. Keep mock data, side effects, navigation, and orchestration outside reusable display components.
+8. Implement the primary path and at least one relevant failure or recovery path.
+9. Use real design assets when provided. Do not replace inspectable product imagery or icons with vague placeholders.
+10. Verify behavior and visual fidelity in a running browser at representative desktop and mobile sizes.
+11. Stop adding architecture when it no longer improves learning, fidelity, reuse, or changeability.
 
 Treat these as defaults, not permission to fight an established codebase. Local patterns win when they already solve the same problem coherently.
 
@@ -42,9 +43,11 @@ Identify all three dimensions before implementation:
 
 If the user does not specify fidelity, reproduce the supplied design closely. Do not redesign it merely to make implementation easier.
 
+If implementation tooling is unspecified, use TypeScript and Tailwind CSS for a greenfield or otherwise unconstrained prototype. Do not migrate an established project solely to enforce this default.
+
 ### 2. Gather Evidence
 
-Inspect the repository for framework, routes, styling, tokens, icon libraries, assets, state libraries, test commands, and component conventions. Inspect every relevant design frame, variant, breakpoint, annotation, and asset.
+Inspect the repository for framework, routes, TypeScript configuration, Tailwind or other styling setup, tokens, icon libraries, assets, state libraries, test commands, and component conventions. Inspect every relevant design frame, variant, breakpoint, annotation, and asset.
 
 Record the minimum working model needed to implement confidently:
 
@@ -85,6 +88,8 @@ Establish, in this order:
 
 Do not use a generic theme as a substitute for reading the source.
 
+When using Tailwind CSS, map recurring design semantics into the existing Tailwind theme or CSS variables. Prefer configured utilities over repeated arbitrary values, while keeping true one-off composition values local.
+
 ### 5. Build Bottom-Up
 
 Implement the smallest coherent vertical slice while maintaining layer direction:
@@ -96,6 +101,8 @@ Implement the smallest coherent vertical slice while maintaining layer direction
 5. Connect routes, state transitions, and mock behaviors.
 
 Do not prebuild a complete abstract design system before the first working screen. Extract reusable pieces as evidence appears, and keep screen-specific composition close to the screen.
+
+Write React components in `.tsx` and non-JSX modules in `.ts` when the default stack applies. Use Tailwind utility classes for component styling and responsive behavior, following any class-merging and variant conventions already present.
 
 Read [component-contracts.md](references/component-contracts.md) when defining component boundaries, props, variants, TypeScript types, or semantic behavior. The optional [create_component.py](scripts/create_component.py) helper may scaffold a stateless host-element component in a greenfield project; do not use it when the repository has a different generator or file convention.
 
@@ -155,6 +162,7 @@ Load only the references needed for the current task:
 Do not call the prototype complete until all applicable statements are true:
 
 - The intended route or entry point renders without runtime errors.
+- New or otherwise unconstrained React code uses TypeScript and Tailwind CSS.
 - The primary flow is usable from start to finish.
 - A relevant alternate, failure, or recovery state is reachable.
 - Reusable display components do not fetch, navigate, or own unrelated business state.
@@ -178,3 +186,4 @@ Correct these immediately when encountered:
 - adding motion inside every component instead of at transition boundaries
 - declaring visual fidelity from code inspection without running the interface
 - replacing a supplied product asset with a generic stock image, emoji, or hand-drawn substitute
+- introducing JavaScript or a parallel styling system when TypeScript and Tailwind CSS are the selected defaults

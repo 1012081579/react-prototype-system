@@ -5,6 +5,7 @@ Design components as predictable visual and interaction contracts.
 ## Contents
 
 - [Classify the Component](#classify-the-component)
+- [Default Implementation Stack](#default-implementation-stack)
 - [Stateless First](#stateless-first)
 - [Prop Design](#prop-design)
 - [Variants](#variants)
@@ -26,6 +27,17 @@ Choose the narrowest useful role:
 - **Screen:** route-level composition and orchestration.
 
 Do not make a primitive aware of a domain entity or route.
+
+## Default Implementation Stack
+
+For a greenfield or otherwise unconstrained React implementation:
+
+- write components in TypeScript with `.tsx` and non-JSX modules with `.ts`
+- keep strict type checking enabled when the scaffold supports it
+- use Tailwind CSS utilities for component styling, state variants, and responsive behavior
+- express shared design values through the Tailwind theme or CSS variables
+
+In an existing repository, use TypeScript and Tailwind CSS when they are already part of the stack. Do not introduce Tailwind or migrate established JavaScript and styling conventions for a narrow change unless the user explicitly requests that migration.
 
 ## Stateless First
 
@@ -83,6 +95,7 @@ Do not mirror a prop into state unless the component intentionally creates an ed
 
 ## TypeScript Rules
 
+- Write new React component source as `.tsx` and non-JSX source as `.ts` when the default stack applies.
 - Reuse domain types instead of redefining look-alikes.
 - Derive primitive host props from the semantic HTML element when useful.
 - Use discriminated unions for mutually exclusive states.
@@ -92,12 +105,17 @@ Do not mirror a prop into state unless the component intentionally creates an ed
 
 ## Styling Contract
 
-- Reuse local tokens and styling utilities.
+- Use Tailwind CSS utilities by default when the default stack applies.
+- Reuse local tokens through the Tailwind theme, CSS variables, and existing styling utilities.
+- Use the repository's existing class-merging or variant helper instead of creating a competing utility.
+- Keep class names statically discoverable; avoid runtime-built fragments that Tailwind cannot detect.
+- Reserve arbitrary values for design-specific one-offs and promote repeated values into shared tokens.
 - Keep layout responsibilities clear between parent and child.
 - Preserve stable dimensions for icons, controls, media ratios, and repeated grid items.
 - Let text wrap or truncate according to design intent without shifting fixed controls.
 - Avoid inline magic numbers repeated across components.
 - Keep one-off composition values local rather than creating noisy global tokens.
+- Use authored CSS only for concerns such as global foundations, complex keyframes, or third-party integration that utilities cannot express clearly.
 
 ## Semantic Contract
 

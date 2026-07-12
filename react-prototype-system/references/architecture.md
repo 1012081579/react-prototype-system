@@ -44,6 +44,8 @@ Do not rename or relocate unrelated code to make it resemble this reference.
 
 Use this only when no stronger project convention exists:
 
+Default source files to TypeScript (`.ts` and `.tsx`) and use Tailwind CSS for component styling and responsive behavior.
+
 ```text
 src/
   app/                 # app setup, providers, router, global shell
@@ -55,7 +57,7 @@ src/
   hooks/               # reusable behavior and orchestration
   mocks/               # deterministic prototype scenarios
   services/            # external IO adapters
-  styles/              # tokens, global styles, shared recipes
+  styles/              # Tailwind entrypoint, CSS variables, global styles
   types/               # genuinely shared contracts
   utils/               # pure helpers
 ```
