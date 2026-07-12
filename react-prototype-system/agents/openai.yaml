@@ -1,0 +1,4 @@
+interface:
+  display_name: "Su React Prototype System"
+  short_description: "Turn design specs into robust React prototypes"
+  default_prompt: "Use $react-prototype-system to turn this design into a responsive React prototype with reusable components and complete interaction states."

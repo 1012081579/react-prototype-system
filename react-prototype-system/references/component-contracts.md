@@ -1,0 +1,135 @@
+# Component Contracts
+
+Design components as predictable visual and interaction contracts.
+
+## Contents
+
+- [Classify the Component](#classify-the-component)
+- [Stateless First](#stateless-first)
+- [Prop Design](#prop-design)
+- [Variants](#variants)
+- [Controlled and Uncontrolled Behavior](#controlled-and-uncontrolled-behavior)
+- [TypeScript Rules](#typescript-rules)
+- [Styling Contract](#styling-contract)
+- [Semantic Contract](#semantic-contract)
+- [Side-Effect Boundary](#side-effect-boundary)
+- [Review Questions](#review-questions)
+
+## Classify the Component
+
+Choose the narrowest useful role:
+
+- **Primitive:** product-neutral host behavior such as a button, input, or dialog surface.
+- **Pattern:** reusable visual arrangement such as a search field or result card.
+- **Domain component:** product-specific data rendered through a reusable contract.
+- **Layout:** structural placement without domain behavior.
+- **Screen:** route-level composition and orchestration.
+
+Do not make a primitive aware of a domain entity or route.
+
+## Stateless First
+
+Start with this question: can the caller fully describe the component through data, status, and callbacks?
+
+If yes, keep it stateless. If no, keep only the interaction state that is truly private, such as temporary disclosure or focus behavior.
+
+Use a stateful wrapper or hook when a reusable visual component needs orchestration. This preserves a testable display contract without forbidding useful behavior.
+
+## Prop Design
+
+Expose props that represent stable concepts visible to callers:
+
+- required data or semantic content
+- named variants supported by the design
+- status or mode when it changes behavior or structure
+- event callbacks named for intent, such as `onSelect`, `onDismiss`, or `onRetry`
+- `children`, `className`, or host attributes when the component is intentionally composable and local conventions support them
+
+Do not automatically add every common prop to every component. Avoid speculative props, pass-through data bags, and aliases for the same concept.
+
+Prefer:
+
+```tsx
+type ResultCardProps = {
+  result: SearchResult;
+  status?: "default" | "selected";
+  onSelect: (id: string) => void;
+};
+```
+
+Avoid:
+
+```tsx
+type ResultCardProps = {
+  data: any;
+  isActive?: boolean;
+  isSelected?: boolean;
+  clickable?: boolean;
+  goToDetail?: boolean;
+};
+```
+
+## Variants
+
+Use a named variant when a finite visual contract is supported by design evidence. Use composition when variants would change most of the component's structure or behavior.
+
+Avoid boolean prop combinations that can represent impossible states. Prefer a discriminated union or one `status` field.
+
+## Controlled and Uncontrolled Behavior
+
+Prefer controlled state when a parent coordinates the value or when the prototype needs deterministic scenario switching. Use private state for self-contained behavior that no ancestor needs to observe.
+
+Do not mirror a prop into state unless the component intentionally creates an editable draft with a synchronization policy.
+
+## TypeScript Rules
+
+- Reuse domain types instead of redefining look-alikes.
+- Derive primitive host props from the semantic HTML element when useful.
+- Use discriminated unions for mutually exclusive states.
+- Avoid `any`, non-null assertions used as design shortcuts, and broad index signatures.
+- Type callbacks by user intent and useful payload, not raw DOM events unless the caller needs the event.
+- Keep types close to their owner; move them only when multiple features share the same contract.
+
+## Styling Contract
+
+- Reuse local tokens and styling utilities.
+- Keep layout responsibilities clear between parent and child.
+- Preserve stable dimensions for icons, controls, media ratios, and repeated grid items.
+- Let text wrap or truncate according to design intent without shifting fixed controls.
+- Avoid inline magic numbers repeated across components.
+- Keep one-off composition values local rather than creating noisy global tokens.
+
+## Semantic Contract
+
+Choose the correct native element first. Preserve:
+
+- accessible name
+- keyboard operation
+- focus visibility
+- disabled semantics
+- label and error relationships
+- dialog focus and dismissal behavior
+- live announcement for meaningful asynchronous changes when needed
+
+Do not implement a clickable `div` when a button or link expresses the action.
+
+## Side-Effect Boundary
+
+A reusable display component must not:
+
+- fetch its own business collection
+- push a route as hidden behavior
+- mutate global state without an explicit contract
+- select a mock scenario internally
+- start analytics or persistence unrelated to its visual responsibility
+
+Pass data and callbacks in. Connect effects in a screen, controller, hook, or service.
+
+## Review Questions
+
+- Can the component be rendered in every required state from props?
+- Does its name describe responsibility rather than appearance alone?
+- Does it expose one clear contract instead of several modes hidden behind booleans?
+- Can it be tested without booting the whole application?
+- Does it reuse the local design system?
+- Is its semantic element correct?
