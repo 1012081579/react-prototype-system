@@ -1,6 +1,6 @@
 ---
 name: react-prototype-system
-description: Turn Figma frames, screenshots, visual specifications, or existing UI designs into high-fidelity React prototypes with Figma-aligned naming, Tailwind-backed design tokens, content-verified assets, responsive named component files, and a component-driven workflow. Default new or unconstrained implementations to TypeScript and Tailwind CSS. Use when Codex is asked to reconstruct React components, screens, flows, design systems, product concepts, or front-end mock applications from a design source; evolve a prototype without collapsing its architecture; or review design-to-code fidelity, asset integrity, naming, token use, component boundaries, interaction states, responsiveness, accessibility, and composition.
+description: Turn Figma frames, screenshots, visual specifications, or existing UI designs into high-fidelity, performance-aware React prototypes with Figma-aligned naming, Tailwind-backed design tokens, content-verified assets, responsive named component files, and a component-driven workflow. Default new or unconstrained implementations to TypeScript and Tailwind CSS. Use when Codex is asked to reconstruct React components, screens, flows, design systems, product concepts, or front-end mock applications from a design source; evolve a prototype without collapsing its architecture; or review design-to-code fidelity, asset integrity, naming, token use, component boundaries, async waterfalls, bundle boundaries, server/client data transfer, re-renders, interaction states, responsiveness, accessibility, and composition.
 ---
 
 # React Prototype System
@@ -31,7 +31,8 @@ Apply these rules throughout the task:
 12. Use real design assets when provided. Determine every persisted asset's format from its bytes or parseable SVG XML, not its URL suffix; SVG content must use an `.svg` suffix.
 13. Do not replace inspectable product imagery or icons with vague placeholders.
 14. Verify behavior and visual fidelity in a running browser at representative desktop and mobile sizes.
-15. Stop adding architecture when it no longer improves learning, fidelity, reuse, or changeability.
+15. Protect the first useful render in impact order: async waterfalls, initial bundle, server/client boundaries, duplicate client work, re-renders, browser rendering, then JavaScript micro-optimizations.
+16. Stop adding architecture or optimization when it no longer improves learning, fidelity, responsiveness, reuse, or changeability.
 
 Treat these as defaults, not permission to fight an established codebase. Local patterns win when they already solve the same problem coherently.
 
@@ -65,6 +66,7 @@ Record the minimum working model needed to implement confidently:
 - loading, empty, error, permission, and recovery states that are shown or implied
 - desktop/mobile relationships
 - required images, icons, fonts, and content, including source, declared MIME, detected format, final filename, and import strategy
+- primary-path async dependencies, heavy optional modules, server/client boundaries, and likely repeated work
 
 Read [design-intake.md](references/design-intake.md) for Figma, screenshot, visual-spec, or incomplete-design tasks. For a substantial flow, copy [prototype-brief.md](assets/prototype-brief.md) into a temporary working note and fill only the useful sections.
 
@@ -72,7 +74,7 @@ Whenever a Figma asset is downloaded or persisted, read [figma-assets.md](refere
 
 ### 3. Model Before JSX
 
-Create six small internal artifacts before coding:
+Create seven small internal artifacts before coding:
 
 1. A screen or flow map.
 2. A Figma-to-code naming map, including every inferred name that affects public APIs or file placement.
@@ -80,6 +82,7 @@ Create six small internal artifacts before coding:
 4. A design-system and Tailwind token map, or an explicit decision to use Tailwind defaults.
 5. A state and scenario matrix.
 6. An asset and responsive-behavior map.
+7. A critical-path map covering first useful render, deferred work, data ownership, and material performance risks.
 
 Do not turn these into user-facing documentation unless requested. Use them to resolve ownership and prevent page-first sprawl.
 
@@ -133,7 +136,24 @@ Before adding imports for persisted Figma assets, run the skill-local [audit_fig
 
 Read [figma-naming-and-tokens.md](references/figma-naming-and-tokens.md) for naming normalization, missing-name inference, Figma design-system detection, Tailwind token mapping, component files, and responsive page composition. Read [component-contracts.md](references/component-contracts.md) when defining component boundaries, props, variants, TypeScript types, or semantic behavior. The optional [create_component.py](scripts/create_component.py) helper may scaffold a stateless host-element component in a greenfield project; do not use it when the repository has a different generator or file convention.
 
-### 6. Make States and Data Deliberate
+### 6. Protect the Critical Path
+
+After editing several React components, adding real async work, crossing a server/client boundary, or introducing a heavy dependency, review the changed route as one runtime path.
+
+Apply improvements in this order:
+
+1. Start independent async work together; defer awaits until their values are needed.
+2. Keep the initial module graph narrow with statically analyzable imports and meaningful lazy boundaries for heavy off-path features.
+3. In server-rendered repositories, parallelize independent regions, keep request data out of shared module state, and serialize only fields consumed by client components.
+4. Reuse the repository's existing client data and request-deduplication layer; keep prototype mocks deterministic instead of adding production infrastructure.
+5. Derive values during render, run action-specific side effects in event handlers, use functional updates for previous-state changes, and define components outside other component renders.
+6. Add memoization, transitions, deferred values, virtualization, or hot-path JavaScript changes only when the work is expensive or supported by profiling evidence.
+
+Preserve stable geometry across lazy, loading, and `Suspense` boundaries. Use existing framework image, caching, package-import, and code-splitting capabilities before adding dependencies or custom infrastructure.
+
+Read [react-performance.md](references/react-performance.md) for async dependency mapping, bundle decisions, server/client boundaries, client data, hooks, re-render policy, hydration, media delivery, review severity, and verification evidence.
+
+### 7. Make States and Data Deliberate
 
 Place state at the narrowest owner that coordinates every consumer. Keep derived values derived. Keep server or mock data separate from display components. Represent mutually exclusive statuses explicitly instead of combining contradictory booleans.
 
@@ -146,7 +166,7 @@ Add loading, long text, overflow, first-use, offline, and destructive-action sta
 
 Read [state-and-mocks.md](references/state-and-mocks.md). Copy [state-matrix.md](assets/state-matrix.md) only when a multi-state prototype needs a persistent scenario inventory.
 
-### 7. Complete the Interaction Flow
+### 8. Complete the Interaction Flow
 
 Make controls perform their implied actions. Connect navigation, menus, tabs, dialogs, filters, forms, undo, retry, and dismissal as the design requires. Prefer a deterministic local simulation over dead controls or unnecessary backend work.
 
@@ -154,7 +174,7 @@ Keep screens focused on `import -> compose -> connect`. Move reusable behavior i
 
 Read [flows-motion-responsive.md](references/flows-motion-responsive.md) for page composition, flow modeling, motion boundaries, responsive behavior, and accessibility.
 
-### 8. Verify in the Browser
+### 9. Verify in the Browser
 
 Run the application and validate the actual rendered result. Use browser screenshots and DOM or console inspection where available.
 
@@ -165,7 +185,8 @@ Verify in this order:
 3. typography, assets, color, and surfaces match
 4. states, focus, keyboard behavior, and recovery work
 5. motion supports the transition and respects reduced motion
-6. tests, type checks, lint, and build pass as supported by the repository
+6. request order, lazy boundaries, hydration, and expensive repeated renders show no primary-path regression
+7. tests, type checks, lint, and build pass as supported by the repository
 
 Compare against the source at representative design dimensions and at least one narrow viewport. Fix the largest perceptual or behavioral mismatch first, then repeat.
 
@@ -182,6 +203,7 @@ Load only the references needed for the current task:
 | Preserve or infer Figma names and map a Figma design system into Tailwind | [figma-naming-and-tokens.md](references/figma-naming-and-tokens.md) |
 | Choose layers, folders, imports, or greenfield structure | [architecture.md](references/architecture.md) |
 | Define component APIs, props, variants, semantics, or types | [component-contracts.md](references/component-contracts.md) |
+| Review async waterfalls, bundles, server/client boundaries, hooks, re-renders, hydration, or runtime performance | [react-performance.md](references/react-performance.md) |
 | Decide state ownership, data boundaries, or mock scenarios | [state-and-mocks.md](references/state-and-mocks.md) |
 | Compose pages, interactions, motion, responsive behavior, or accessibility | [flows-motion-responsive.md](references/flows-motion-responsive.md) |
 | Review fidelity, behavior, code quality, and completion | [verification.md](references/verification.md) |
@@ -199,6 +221,9 @@ Do not call the prototype complete until all applicable statements are true:
 - The primary flow is usable from start to finish.
 - A relevant alternate, failure, or recovery state is reachable.
 - Reusable display components do not fetch, navigate, or own unrelated business state.
+- Independent async work on the primary path is not serialized without a dependency reason, and heavy off-path modules are deferred when the split is meaningful.
+- Server/client boundaries pass only required data and contain no request-specific mutable module state.
+- Derived values are not mirrored through effects; action logic lives in handlers; memoization and concurrent APIs solve an evidenced cost.
 - Every persisted design asset has content that matches its suffix; SVG structure and import behavior are valid for the repository.
 - Every responsive SVG has a valid `viewBox`, and any remaining asset-audit warning is resolved or explicitly justified for the chosen rendering strategy.
 - Any asset rename is reflected in all code, CSS, markup, manifest, fixture, test, documentation, and public-path references.
@@ -218,6 +243,12 @@ Correct these immediately when encountered:
 - inventing a prop for every possible future need
 - using boolean combinations that permit impossible states
 - hardcoding business data in JSX instead of passing data or using mocks
+- awaiting independent operations sequentially or blocking a whole route on one independently renderable region
+- eagerly importing a heavy off-path feature, hiding import paths from static analysis, or introducing a broad catch-all barrel without a local convention
+- passing full server records through a client boundary when the component consumes only a few fields
+- storing request-specific mutable data in server module scope
+- synchronizing derived state or user-action flags through effects
+- memoizing cheap expressions, every callback, or every component without a measured or structurally expensive render
 - treating one desktop frame as proof of responsive behavior
 - adding motion inside every component instead of at transition boundaries
 - declaring visual fidelity from code inspection without running the interface

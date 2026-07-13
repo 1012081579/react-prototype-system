@@ -59,6 +59,12 @@ If the file has no design system, record `Tailwind default theme` and list only 
 | --- | --- | --- | --- | --- |
 | | | | | |
 
+## Critical-Path Map
+
+| Surface | First useful render | Deferred work | Data owner | Performance risk |
+| --- | --- | --- | --- | --- |
+| | | | | |
+
 ## Verification
 
 - Source viewport:

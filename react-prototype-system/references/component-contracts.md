@@ -172,3 +172,5 @@ Pass data and callbacks in. Connect effects in a screen, controller, hook, or se
 - Can it be tested without booting the whole application?
 - Does it reuse the local design system?
 - Is its semantic element correct?
+- Are derived values computed during render instead of mirrored through effects?
+- Is the component defined at module scope, with stable keys for every reorderable collection it renders?

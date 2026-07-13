@@ -10,6 +10,7 @@ Judge the rendered experience, not the source code alone.
 - [Visual Checks](#visual-checks)
 - [Functional Checks](#functional-checks)
 - [Engineering Checks](#engineering-checks)
+- [Performance Checks](#performance-checks)
 - [Architecture Checks](#architecture-checks)
 - [Review Severity](#review-severity)
 - [Final Report](#final-report)
@@ -91,6 +92,19 @@ Run the skill's `scripts/audit_figma_assets.py` in read-only mode when Figma ass
 
 Do not add a new test stack solely for a small prototype. Add focused tests using the existing stack for shared behavior, state transitions, and risky logic.
 
+## Performance Checks
+
+- independent primary-path requests start together unless one depends on another
+- one async region does not block unrelated layout or sibling data work
+- heavy editors, maps, charts, or 3D surfaces stay out of the first-render bundle when they are off-path and the framework supports a meaningful split
+- server/client boundaries transfer only required fields and never share request-specific mutable module state
+- repeated component instances do not create duplicate live requests or identical global listeners
+- derived values render directly instead of being synchronized through effects
+- components are not declared inside other component renders, and reorderable lists use stable domain keys
+- loading, lazy, and suspense states preserve stable geometry without hydration warnings or visual flicker
+
+Use the browser network panel, console, React Profiler, and supported production-build output only as needed. Do not claim a performance improvement was measured when the required evidence is unavailable.
+
 ## Architecture Checks
 
 - lower-level components do not import screens or routes
@@ -121,6 +135,7 @@ State concisely:
 - what was implemented
 - which routes or scenarios were verified
 - which checks passed
+- which primary-path performance evidence was inspected when applicable
 - any remaining uncertainty caused by missing design evidence or unavailable tooling
 
 Never claim pixel fidelity, responsive correctness, or interaction completion without running and inspecting the relevant state.

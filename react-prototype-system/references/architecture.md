@@ -12,6 +12,7 @@ Use a layered dependency model without forcing a new folder taxonomy onto a cohe
 - [Screen Rule](#screen-rule)
 - [Extraction Rule](#extraction-rule)
 - [Boundary Rule](#boundary-rule)
+- [Runtime and Import Boundaries](#runtime-and-import-boundaries)
 - [Prototype Versus Production](#prototype-versus-production)
 
 ## Dependency Direction
@@ -86,7 +87,6 @@ Match every reusable component's primary export and file name:
 ```text
 components/app/ProductCard/
   ProductCard.tsx
-  index.ts
 ```
 
 Use the normalized meaningful Figma name for `ProductCard`. If the repository uses flat component files, keep `ProductCard.tsx` in the established directory; the file and export must still match.
@@ -140,6 +140,20 @@ Keep a region local when it is tiny, unique, and clearer in context. Do not crea
 Let each layer expose a small public contract. Import through established public entry points when the repository uses them. Avoid deep imports into another feature's private internals.
 
 Prevent cycles by moving shared lower-level concerns downward, not by importing screens into components.
+
+## Runtime and Import Boundaries
+
+Keep imports statically analyzable and proportional to the route:
+
+- import a component through the repository's established public path
+- avoid introducing broad catch-all barrel files in a greenfield structure
+- avoid runtime-built module paths that force the bundler to include many possible files
+- defer genuinely heavy off-path features through the framework's existing lazy-loading mechanism
+- do not deep-import a package when that path is private or loses TypeScript declarations
+
+In SSR or server-component repositories, keep client boundaries as narrow as interaction requires. Pass only the fields a client component consumes, keep request-specific mutable state out of module scope, and compose independent data regions so one await does not block unrelated siblings.
+
+These are ownership decisions first. Do not reorganize a coherent repository solely to create a theoretical bundle improvement.
 
 ## Prototype Versus Production
 
