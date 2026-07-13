@@ -55,9 +55,9 @@ If the file has no design system, record `Tailwind default theme` and list only 
 
 ## Asset Map
 
-| Asset | Source | Usage and crop |
-| --- | --- | --- |
-| | | |
+| Asset | Source | Declared MIME | Detected format and final filename | Usage, import, and crop |
+| --- | --- | --- | --- | --- |
+| | | | | |
 
 ## Verification
 

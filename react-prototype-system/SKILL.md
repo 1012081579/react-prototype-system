@@ -1,6 +1,6 @@
 ---
 name: react-prototype-system
-description: Turn Figma frames, screenshots, visual specifications, or existing UI designs into high-fidelity React prototypes with Figma-aligned naming, Tailwind-backed design tokens, responsive named component files, and a component-driven workflow. Default new or unconstrained implementations to TypeScript and Tailwind CSS. Use when Codex is asked to reconstruct React components, screens, flows, design systems, product concepts, or front-end mock applications from a design source; evolve a prototype without collapsing its architecture; or review design-to-code fidelity, naming, token use, component boundaries, interaction states, responsiveness, accessibility, and composition.
+description: Turn Figma frames, screenshots, visual specifications, or existing UI designs into high-fidelity React prototypes with Figma-aligned naming, Tailwind-backed design tokens, content-verified assets, responsive named component files, and a component-driven workflow. Default new or unconstrained implementations to TypeScript and Tailwind CSS. Use when Codex is asked to reconstruct React components, screens, flows, design systems, product concepts, or front-end mock applications from a design source; evolve a prototype without collapsing its architecture; or review design-to-code fidelity, asset integrity, naming, token use, component boundaries, interaction states, responsiveness, accessibility, and composition.
 ---
 
 # React Prototype System
@@ -28,9 +28,10 @@ Apply these rules throughout the task:
 9. Prefer stateless display components controlled by explicit props and callbacks.
 10. Keep mock data, side effects, navigation, and orchestration outside reusable display components.
 11. Implement the primary path and at least one relevant failure or recovery path.
-12. Use real design assets when provided. Do not replace inspectable product imagery or icons with vague placeholders.
-13. Verify behavior and visual fidelity in a running browser at representative desktop and mobile sizes.
-14. Stop adding architecture when it no longer improves learning, fidelity, reuse, or changeability.
+12. Use real design assets when provided. Determine every persisted asset's format from its bytes or parseable SVG XML, not its URL suffix; SVG content must use an `.svg` suffix.
+13. Do not replace inspectable product imagery or icons with vague placeholders.
+14. Verify behavior and visual fidelity in a running browser at representative desktop and mobile sizes.
+15. Stop adding architecture when it no longer improves learning, fidelity, reuse, or changeability.
 
 Treat these as defaults, not permission to fight an established codebase. Local patterns win when they already solve the same problem coherently.
 
@@ -63,9 +64,11 @@ Record the minimum working model needed to implement confidently:
 - interactive controls and transitions
 - loading, empty, error, permission, and recovery states that are shown or implied
 - desktop/mobile relationships
-- required images, icons, fonts, and content
+- required images, icons, fonts, and content, including source, declared MIME, detected format, final filename, and import strategy
 
 Read [design-intake.md](references/design-intake.md) for Figma, screenshot, visual-spec, or incomplete-design tasks. For a substantial flow, copy [prototype-brief.md](assets/prototype-brief.md) into a temporary working note and fill only the useful sections.
+
+Whenever a Figma asset is downloaded or persisted, read [figma-assets.md](references/figma-assets.md). Treat response `Content-Type` as evidence and the downloaded bytes or parseable SVG root as authoritative. Do not import the asset until its suffix and integrity have been verified.
 
 ### 3. Model Before JSX
 
@@ -126,6 +129,8 @@ Normalize a meaningful Figma component name to PascalCase and use it for both th
 
 Make the component itself responsive with Tailwind breakpoint and state utilities. Keep the page focused on importing, composing, and connecting responsive components; do not rebuild their internal desktop and mobile markup inside the page.
 
+Before adding imports for persisted Figma assets, run the skill-local [audit_figma_assets.py](scripts/audit_figma_assets.py) against the downloaded file or asset directory. Review the read-only report first; use `--fix` only for safe suffix renames, then update every code, CSS, markup, manifest, fixture, test, and documentation reference to the old filename. Re-run the audit after those edits. The fixer must never overwrite a conflicting target or stand in for intentional SVG sanitization.
+
 Read [figma-naming-and-tokens.md](references/figma-naming-and-tokens.md) for naming normalization, missing-name inference, Figma design-system detection, Tailwind token mapping, component files, and responsive page composition. Read [component-contracts.md](references/component-contracts.md) when defining component boundaries, props, variants, TypeScript types, or semantic behavior. The optional [create_component.py](scripts/create_component.py) helper may scaffold a stateless host-element component in a greenfield project; do not use it when the repository has a different generator or file convention.
 
 ### 6. Make States and Data Deliberate
@@ -173,6 +178,7 @@ Load only the references needed for the current task:
 | Need | Read |
 | --- | --- |
 | Interpret a Figma frame, screenshot, annotation, or asset set | [design-intake.md](references/design-intake.md) |
+| Download, persist, rename, import, inline, or debug a Figma asset | [figma-assets.md](references/figma-assets.md) |
 | Preserve or infer Figma names and map a Figma design system into Tailwind | [figma-naming-and-tokens.md](references/figma-naming-and-tokens.md) |
 | Choose layers, folders, imports, or greenfield structure | [architecture.md](references/architecture.md) |
 | Define component APIs, props, variants, semantics, or types | [component-contracts.md](references/component-contracts.md) |
@@ -193,6 +199,9 @@ Do not call the prototype complete until all applicable statements are true:
 - The primary flow is usable from start to finish.
 - A relevant alternate, failure, or recovery state is reachable.
 - Reusable display components do not fetch, navigate, or own unrelated business state.
+- Every persisted design asset has content that matches its suffix; SVG structure and import behavior are valid for the repository.
+- Every responsive SVG has a valid `viewBox`, and any remaining asset-audit warning is resolved or explicitly justified for the chosen rendering strategy.
+- Any asset rename is reflected in all code, CSS, markup, manifest, fixture, test, documentation, and public-path references.
 - Supplied assets are used correctly and no inspectable content is replaced by arbitrary placeholders.
 - Desktop and narrow layouts are coherent and free of unintended overlap or clipping.
 - Interactive elements use appropriate semantics, labels, focus behavior, and keyboard access.
@@ -213,6 +222,10 @@ Correct these immediately when encountered:
 - adding motion inside every component instead of at transition boundaries
 - declaring visual fidelity from code inspection without running the interface
 - replacing a supplied product asset with a generic stock image, emoji, or hand-drawn substitute
+- trusting a Figma export URL or suggested filename instead of detecting the downloaded content format
+- storing SVG XML under `.png`, rasterizing it without a product requirement, or renaming it without updating every reference
+- assuming SVG imports become React components without checking the repository's bundler and TypeScript setup
+- inlining SVG with active content, broken IDs, missing responsive geometry, or unreviewed external references
 - introducing JavaScript or a parallel styling system when TypeScript and Tailwind CSS are the selected defaults
 - carrying autogenerated names such as `Frame123` into public component or prop APIs
 - renaming a meaningful Figma component without a product or code-contract reason

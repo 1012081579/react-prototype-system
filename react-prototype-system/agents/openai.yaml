@@ -1,4 +1,4 @@
 interface:
   display_name: "Su React Prototype System"
-  short_description: "Build Figma-aligned React systems with Tailwind"
-  default_prompt: "Use $react-prototype-system to preserve or infer Figma names, map its design system into Tailwind variables, build responsive TypeScript components in matching files, and compose the page from them."
+  short_description: "Build Figma-aligned React systems with verified assets"
+  default_prompt: "Use $react-prototype-system to preserve Figma naming, map its design system into Tailwind, verify downloaded asset formats, and build responsive TypeScript components in matching files."

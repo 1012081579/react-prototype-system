@@ -55,6 +55,7 @@ Add intermediate widths when the layout changes substantially or when sidebars, 
 - content container and grid proportions match
 - typography wraps at comparable points
 - media uses the correct asset, crop, and aspect ratio
+- persisted asset contents match their filename suffixes, and SVGs retain valid responsive geometry
 - icons come from the intended library or source
 - repeated components have stable geometry
 - overlays fit the viewport and do not hide required actions
@@ -73,6 +74,7 @@ Use overlays, side-by-side screenshots, or measured DOM boxes when available. Pr
 - focus moves and returns coherently
 - narrow layouts preserve every essential action
 - reduced-motion users receive a usable transition
+- renamed assets resolve through every import, stylesheet, manifest, fixture, and public URL
 
 ## Engineering Checks
 
@@ -83,7 +85,9 @@ Run the repository-supported commands for:
 - linting
 - production build
 
-Inspect browser console errors and warnings that indicate broken behavior, invalid markup, missing keys, failed assets, or hydration problems.
+Inspect browser console errors and warnings that indicate broken behavior, invalid markup, missing keys, failed assets, unsupported SVG loaders, MIME mismatches, decode failures, or hydration problems. Check the network panel for asset 404s and verify that image responses use the intended content.
+
+Run the skill's `scripts/audit_figma_assets.py` in read-only mode when Figma assets were persisted or renamed. Complete the implementation only when the audit has zero errors and the rendered assets are visible and nonblank.
 
 Do not add a new test stack solely for a small prototype. Add focused tests using the existing stack for shared behavior, state transitions, and risky logic.
 
